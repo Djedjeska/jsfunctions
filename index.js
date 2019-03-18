@@ -37,7 +37,7 @@ module.exports = function(app) {
 				templates[file] = fs.readFileSync(dir + '/' + file, 'UTF8');
 			//Sous-dossiers
 			else if (file.indexOf('.') === -1) {
-				getTemplates(dir + '/' + file);
+				templates = Object.assign(templates, getTemplates(dir + '/' + file));
 			}
 		});
 		app.templates = templates;
