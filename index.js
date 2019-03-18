@@ -2,6 +2,7 @@
 module.exports = function(app) {
 	let fs = require('fs');
 	let jsonfile = require('jsonfile');
+	app.extension = app.templatesExtension || '.gdb';
 	app.uniqId = 0;
 	app.Listes = {};
 	app.templates = {};
@@ -29,15 +30,18 @@ module.exports = function(app) {
 	};
 
 	let getTemplates = function(dir = 'views') {
+		let templates = {};
 		let files = fs.readdirSync(dir);
 		files.forEach(function(file) {
-			if (file.indexOf('.gdb') > -1)
-				app.templates[file] = fs.readFileSync(dir + '/' + file, 'UTF8');
+			if (file.indexOf(app.extension) > -1)
+				templates[file] = fs.readFileSync(dir + '/' + file, 'UTF8');
 			//Sous-dossiers
 			else if (file.indexOf('.') === -1) {
 				getTemplates(dir + '/' + file);
 			}
 		});
+		app.templates = templates;
+		return templates;
 	};
 
 	let getJSFiles = function(dir = 'public/javascripts', excluded = []) {
@@ -86,7 +90,7 @@ module.exports = function(app) {
 		return jsfiles;
 	};
 
-	app.extension = app.templatesExtension || '.gdb';
+
 	let loadTemplate = function(template, options, callback) {
 		template = template.indexOf(app.extension) > -1 ? template : template + app.extension;
 		let content = app.templates[template];
@@ -108,14 +112,15 @@ module.exports = function(app) {
 				match = reg.exec(template);
 			}
 			//Remplacement des sous-templates
-			content = content.replace(/\[\[(.*?\.gdb)]]/g, function (match, fichier) {
-				if (fichier === 'layout.' + app.extension)
+			let reg = '/\[\[(.*?\.' + app.extension + ')]]/g';
+			content = content.replace(reg, function (match, fichier) {
+				if (fichier === 'layout' + app.extension)
 					options['layout-javascripts'] = app.javascripts.join("\n");
 				let content2 = app.templates[fichier];
 				//Préfixage des variables
 				content2 = content2.replace(/\[\[([^.]*?)]]/g, function (match, variable) {
 					variable = variable.toLowerCase();
-					return '[[' + fichier.replace('.gdb', '') + '-' + variable + ']]';
+					return '[[' + fichier.replace(app.extension, '') + '-' + variable + ']]';
 				});
 				return replaceVariables(content2, options);
 			});
@@ -176,8 +181,8 @@ module.exports = function(app) {
 			else if (variable.substring(0, 8).toLowerCase() === 'tableau.') {
 				let Split = variable.split('.');
 				let NomTableau = Split[1];
-				let NomTemplate = app.templates[Split[2] + '.gdb'] ? Split[2] + '.gdb' : 'SingleElement.gdb';
-				let SingleTemplate = app.templates[Split[2] + '.gdb'] || templates['SingleElement.gdb'];
+				let NomTemplate = app.templates[Split[2] + app.extension] ? Split[2] + app.extension : 'SingleElement.gdb';
+				let SingleTemplate = app.templates[Split[2] + app.extension] || templates['SingleElement' + app.extension];
 				let Tableau = options.Listes ? options.Listes[NomTableau] : null;
 				Tableau = Tableau || Listes[NomTableau];
 				if (!Tableau) {

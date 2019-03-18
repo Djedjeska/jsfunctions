@@ -1,6 +1,6 @@
 {
-  "name": "jsfunctions",
-  "version": "0.0.0",
+  "name": "esbfunctions",
+  "version": "0.0.2",
   "description": "yep",
   "main": "index.js",
   "scripts": {
@@ -10,10 +10,13 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Djedjeska/jsfunctions.git"
+    "url": "git+https://github.com/Djedjeska/esbfunctions.git"
   },
   "bugs": {
-    "url": "https://github.com/Djedjeska/jsfunctions/issues"
+    "url": "https://github.com/Djedjeska/esbfunctions/issues"
   },
-  "homepage": "https://github.com/Djedjeska/jsfunctions#readme"
+  "homepage": "https://github.com/Djedjeska/esbfunctions#readme",
+  "dependencies": {
+    "jsonfile": "^5.0.0"
+  }
 }
