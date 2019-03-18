@@ -1,0 +1,19 @@
+{
+  "name": "jsfunctions",
+  "version": "0.0.0",
+  "description": "yep",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Djedjeska <djedjeska@hotmail.fr> (https://www.autoworld.fr)",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Djedjeska/jsfunctions.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Djedjeska/jsfunctions/issues"
+  },
+  "homepage": "https://github.com/Djedjeska/jsfunctions#readme"
+}
