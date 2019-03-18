@@ -112,7 +112,7 @@ module.exports = function(app) {
 				match = reg.exec(template);
 			}
 			//Remplacement des sous-templates
-			reg = new RegExp('/\[\[(.*?\.' + app.extension + ')]]/g');
+			reg = new RegExp('\\[\\[(.*?\\' + app.extension + ')]]', 'g');
 			content = content.replace(reg, function (match, fichier) {
 				if (fichier === 'layout' + app.extension)
 					options['layout-javascripts'] = app.javascripts.join("\n");
