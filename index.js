@@ -50,7 +50,7 @@ module.exports = function(app) {
 		let files = fs.readdirSync(dir);
 		files.forEach(function(file) {
 			if (file.indexOf('.json') === -1 && file.indexOf('.js') > -1 && excluded.indexOf(file) === -1)
-				jsfiles.push('<script type="text/javascript" src="/javascripts/' + file + '"></script>');
+				jsfiles.push('<script type="text/javascript" src="/' + dir.replace('public/', '') + '/' + file + '"></script>');
 		});
 		return jsfiles;
 	};
