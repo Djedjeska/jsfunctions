@@ -69,11 +69,10 @@ module.exports = function(app) {
 					let reg = /module\.exports.*{([^]*)return/;
 					let regexec = reg.exec(content) || ['', ''];
 					content = '(function(exports){\n\n' + regexec[1];
-					reg = /let ([^\*\n]*) = function/g;
+					reg = /let ([^\*\n]*) = (?:function|class)/g;
 					let match;
-					while (match = reg.exec(content)) {
+					while (match = reg.exec(content))
 						content += 'exports.' + match[1] + ' = ' + match[1] + ';\n\t';
-					}
 					content = content.replace(/(let [^\*\n]* = require.*;)/g, '//$1');
 					content = content.replace(/([^\n]*io.sockets[^\*\n]*;)/g, '//$1');
 					content = content.replace(/([^\n]*socket.emit[^\*\n]*;)/g, '//$1');
