@@ -56,38 +56,35 @@ module.exports = function(app) {
 	};
 
 	//Création des fichiers miroir
-	let shareJSFiles = function(excluded = [], dir = __dirname + '/public/javascripts/server-mirror') {
-		excluded = excluded.concat(['app.js', 'functions.js', 'sockets.js']);
-		checkFolder(dir);
-		let jsfiles = [];
-		let files = fs.readdirSync(__dirname);
+	let shareJSFiles = function(excluded = [], basedir) {
+		if (basedir) {
+			excluded = excluded.concat(['app.js', 'functions.js', 'sockets.js']);
+			checkFolder(basedir + '/public/javascripts/server-mirror');
+			let jsfiles = [];
+			let files = fs.readdirSync(basedir);
 
-		files.forEach(function(file) {
-			if (file.indexOf('.json') === -1 && file.indexOf('.js') > -1 && excluded.indexOf(file) === -1) {
-				let content = fs.readFileSync(file).toString();
-				let reg = /module\.exports.*{([^]*)return/;
-				let regexec = reg.exec(content) || ['', ''];
-				content = '(function(exports){\n\n' + regexec[1];
-				reg = /let ([^\*\n]*) = function/g;
-				let match;
-				while (match = reg.exec(content)) {
-					content += 'exports.' + match[1] + ' = ' + match[1] + ';\n\t';
+			files.forEach(function (file) {
+				if (file.indexOf('.json') === -1 && file.indexOf('.js') > -1 && excluded.indexOf(file) === -1) {
+					let content = fs.readFileSync(file).toString();
+					let reg = /module\.exports.*{([^]*)return/;
+					let regexec = reg.exec(content) || ['', ''];
+					content = '(function(exports){\n\n' + regexec[1];
+					reg = /let ([^\*\n]*) = function/g;
+					let match;
+					while (match = reg.exec(content)) {
+						content += 'exports.' + match[1] + ' = ' + match[1] + ';\n\t';
+					}
+					content = content.replace(/(let [^\*\n]* = require.*;)/g, '//$1');
+					content = content.replace(/([^\n]*io.sockets[^\*\n]*;)/g, '//$1');
+					content = content.replace(/([^\n]*socket.emit[^\*\n]*;)/g, '//$1');
+					content += '\n})(typeof exports === \'undefined\'? this[\'' + file.replace('.js', '') + 'f\']={}: exports);';
+					fs.writeFileSync(basedir + '/public/javascripts/server-mirror/' + file.replace(/\.js/g, '-c.js'), content);
+					//Préparation des scripts client
+					jsfiles.push('<script type="text/javascript" src="/javascripts/server-mirror/' + file + '"></script>');
 				}
-				content = content.replace(/(let [^\*\n]* = require.*;)/g, '//$1');
-				content = content.replace(/([^\n]*io.sockets[^\*\n]*;)/g, '//$1');
-				content = content.replace(/([^\n]*socket.emit[^\*\n]*;)/g, '//$1');
-				content += '\n})(typeof exports === \'undefined\'? this[\'' + file.replace('.js', '') + 'f\']={}: exports);';
-				fs.writeFileSync(dir + '/' + file.replace(/\.js/g, '-c.js'), content);
-			}
-		});
-
-		files = fs.readdirSync('public/javascripts/server-mirror');
-		files.forEach(function (file) {
-			if (file.indexOf('.json') === -1 && file.indexOf('.js') > -1) {
-				jsfiles.push('<script type="text/javascript" src="/javascripts/server-mirror/' + file + '"></script>');
-			}
-		});
-		return jsfiles;
+			});
+			return jsfiles;
+		}
 	};
 
 
