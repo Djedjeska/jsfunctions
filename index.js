@@ -1,8 +1,8 @@
 
-module.exports = function(app) {
+module.exports = function(app, autoload = false) {
 	let fs = require('fs');
 	let jsonfile = require('jsonfile');
-	app.extension = app.templatesExtension || '.gdb';
+	app.extension = app.extension || '.gdb';
 	app.uniqId = 0;
 	app.Listes = {};
 	app.templates = {};
@@ -40,7 +40,6 @@ module.exports = function(app) {
 				templates = Object.assign(templates, getTemplates(dir + '/' + file));
 			}
 		});
-		app.templates = templates;
 		return templates;
 	};
 
@@ -95,7 +94,7 @@ module.exports = function(app) {
 			return 'Template "' + template + '" introuvable.';
 		}
 		let safeLoop = 0;
-		while(safeLoop === 0 || content.indexOf('.' + app.extension + ']]') > -1) {
+		while(safeLoop === 0 || content.indexOf(app.extension + ']]') > -1) {
 			safeLoop++;
 			if (safeLoop > 100) {
 				log('Boucle infinie', "\n", content); break;
@@ -386,6 +385,11 @@ module.exports = function(app) {
 	let log = function (message) {
 		if (app.logs) console.log(message);
 	};
+
+	if (autoload) {
+		app.templates = getTemplates();
+		app.javascripts = getJSFiles().concat(getJSFiles('public/javascripts/server-mirror'));
+	}
 
 	return 	{
 		getImages: getImages,
